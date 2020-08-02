@@ -762,19 +762,22 @@ Param(
 
     $myModuleName = $Modules.Keys | Select -First 1 | Select-Object -ExpandProperty BaseName
 
-    # Create our sessions with targets
     if ($Credential) {
         if ($UseSSL) {
-            $PSSessions = New-PSSession -ComputerName $Targets -Port $Port -UseSSL -Authentication $Authentication -SessionOption (New-PSSessionOption -NoMachineProfile -OpenTimeout 1500 -OperationTimeout 5000 -CancelTimeout 5000) -Credential $Credential
+            $PSSessions = New-PSSession -ComputerName $Targets -Port $Port -UseSSL -Authentication $Authentication -SessionOption (New-PSSessionOption -NoMachineProfile) -Credential $Credential
         } else {
-            $PSSessions = New-PSSession -ComputerName $Targets -Port $Port -Authentication $Authentication -SessionOption (New-PSSessionOption -NoMachineProfile -OpenTimeout 1500 -OperationTimeout 5000 -CancelTimeout 5000) -Credential $Credential
+            $PSSessions = New-PSSession -ComputerName $Targets -Port $Port -Authentication $Authentication -SessionOption (New-PSSessionOption -NoMachineProfile) -Credential $Credential
         }
+        $Error | Add-Content -Encoding $Encoding $ErrorLog
+        $Error.Clear()
     } else {
         if ($UseSSL) {
-            $PSSessions = New-PSSession -ComputerName $Targets -Port $Port -UseSSL -Authentication $Authentication -SessionOption (New-PSSessionOption -NoMachineProfile -OpenTimeout 1500 -OperationTimeout 5000 -CancelTimeout 5000)
+            $PSSessions = New-PSSession -ComputerName $Targets -Port $Port -UseSSL -Authentication $Authentication -SessionOption (New-PSSessionOption -NoMachineProfile)
         } else {
-            $PSSessions = New-PSSession -ComputerName $Targets -Port $Port -Authentication $Authentication -SessionOption (New-PSSessionOption -NoMachineProfile -OpenTimeout 1500 -OperationTimeout 5000 -CancelTimeout 5000)
+            $PSSessions = New-PSSession -ComputerName $Targets -Port $Port -Authentication $Authentication -SessionOption (New-PSSessionOption -NoMachineProfile)
         }
+        $Error | Add-Content -Encoding $Encoding $ErrorLog
+        $Error.Clear()
     }
 
     # Check for and log errors
