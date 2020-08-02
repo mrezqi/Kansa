@@ -797,18 +797,9 @@ Param(
             $DirectivesHash  = @{}
             $DirectivesHash = Get-Directives $Module
             if ($Pushbin) {
-                $bindeps = [string]$DirectivesHash.Get_Item("BINDEP") -split ';'
-                foreach($bindep in $bindeps) {
+                $bindep = $($DirectivesHash.Get_Item("BINDEP"))
                 if ($bindep) {
-
-                    # Send-File only supports a single destination at a time, so we have to loop this.
-                    # Fix for Issue 146, originally suggested by sc2pyro.
-                    foreach ($PSSession in $PSSessions)
-                    {
-                        $RemoteWindir = Invoke-Command -Session $PSSession -ScriptBlock { Get-ChildItem -Force env: | Where-Object { $_.Name -match "windir" } | Select-Object -ExpandProperty value }
-                        $null = Send-File -Path (ls $bindep).FullName -Destination $RemoteWindir -Session $PSSession
-                        }
-                    }
+		    Push-Bindep -Targets $Targets -Module $Module -Bindep $bindep -Credential $Credential
                 }
             }
 
